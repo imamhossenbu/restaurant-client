@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body{
+    font-family: "Inter", serif;
+}
+
+.carousel-container {
+    height: auto; /* Allows carousel to adjust based on content */
+}
+
+.carousel-container .carousel .thumbs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.carousel-container .carousel .thumb {
+    height: 60px; /* Fixed height for thumbnails */
+    width: 150px; /* Fixed width for thumbnails */
+    overflow: hidden;
+    margin: 0 5px; /* Spacing between thumbnails */
+    border-radius: 5px; /* Optional rounded corners */
+}
+
+.carousel-container .carousel .thumb img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover; /* Ensures thumbnails don't stretch */
+}
