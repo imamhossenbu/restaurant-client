@@ -12,12 +12,12 @@ const Cover = ({ img, title, subtitle }) => {
             <div
                 className="hero h-[500px]">
                 <div className="hero-overlay bg-opacity-60"></div>
-                <div className='w-[60%] mx-auto py-16  bg-black bg-opacity-60 shadow-lg'>
+                <div className='w-[80%] md:w-[50%] mx-auto py-10  bg-black bg-opacity-60 shadow-lg'>
 
                     <div className="text-neutral-content text-center">
                         <div className="max-w-5xl">
-                            <h1 className="mb-5 text-5xl font-bold uppercase">{title}</h1>
-                            <p className="mb-5 uppercase">
+                            <h1 className="mb-5 text-4xl font-bold uppercase">{title}</h1>
+                            <p className="mb-5 text-md uppercase">
                                 {subtitle}
                             </p>
                         </div>

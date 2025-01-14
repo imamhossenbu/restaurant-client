@@ -6,21 +6,22 @@ import 'react-tabs/style/react-tabs.css';
 import useMenu from '../../Hooks/useMenu';
 import MenuCart from '../../components/MenuCart/MenuCart';
 import { useParams } from 'react-router-dom';
+import OrderTab from './OrderTab';
 
 
 const Order = () => {
-    const categories = ['salad','pizza','soup','dessert','drinks','offered']
-    const {category} = useParams();
+    const categories = ['salad', 'pizza', 'soup', 'dessert', 'drinks', 'offered']
+    const { category } = useParams();
     const initialIndex = categories.indexOf(category);
-    const [tabIndex, setTabIndex]  = useState(initialIndex);
+    const [tabIndex, setTabIndex] = useState(initialIndex);
     const [menu] = useMenu();
     console.log(category);
-    const dessert = menu.filter(item => item.category ==='dessert');
-    const salad = menu.filter(item => item.category ==='salad');
-    const soup = menu.filter(item => item.category ==='soup');
-    const pizza = menu.filter(item => item.category ==='pizza');
-    const drinks = menu.filter(item => item.category ==='drinks');
-    const offered = menu.filter(item => item.category ==='offered');
+    const dessert = menu.filter(item => item.category === 'dessert');
+    const salad = menu.filter(item => item.category === 'salad');
+    const soup = menu.filter(item => item.category === 'soup');
+    const pizza = menu.filter(item => item.category === 'pizza');
+    const drinks = menu.filter(item => item.category === 'drinks');
+    const offered = menu.filter(item => item.category === 'offered');
 
     return (
         <div>
@@ -35,46 +36,22 @@ const Order = () => {
                     <Tab>Offered</Tab>
                 </TabList>
                 <TabPanel>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto px-4">
-                        {
-                            salad.map(item => <MenuCart key={item._id} item={item}></MenuCart>)
-                        }
-                    </div>
+                    <OrderTab items={salad}></OrderTab>
                 </TabPanel>
                 <TabPanel>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto px-4">
-                        {
-                            pizza.map(item => <MenuCart key={item._id} item={item}></MenuCart>)
-                        }
-                    </div>
+                    <OrderTab items={pizza}></OrderTab>
                 </TabPanel>
                 <TabPanel>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto px-4">
-                        {
-                            soup.map(item => <MenuCart key={item._id} item={item}></MenuCart>)
-                        }
-                    </div>
+                <OrderTab items={soup}></OrderTab>
                 </TabPanel>
                 <TabPanel>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto px-4">
-                        {
-                            dessert.map(item => <MenuCart key={item._id} item={item}></MenuCart>)
-                        }
-                    </div>
+                <OrderTab items={dessert}></OrderTab>
                 </TabPanel>
                 <TabPanel>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto px-4">
-                        {
-                            drinks.map(item => <MenuCart key={item._id} item={item}></MenuCart>)
-                        }
-                    </div>
+                    <OrderTab items={drinks}></OrderTab>
                 </TabPanel>
                 <TabPanel>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto px-4">
-                        {
-                            offered.map(item => <MenuCart key={item._id} item={item}></MenuCart>)
-                        }
-                    </div>
+                <OrderTab items={offered}></OrderTab>
                 </TabPanel>
             </Tabs>
         </div>

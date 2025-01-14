@@ -32,7 +32,7 @@ const Menu = () => {
             {/* offered menu */}
             <div className='py-10'>
                 <SectionTitle subheading={"Don't Miss"} heading={"Today's offer"}></SectionTitle>
-                <div className='grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mt-10 mb-10'>
+                <div className='grid md:grid-cols-2 gap-6 max-w-5xl px-4 mx-auto mt-10 mb-10'>
                     {
                         offered.map(item => <MenuItem
                             key={item._id}
