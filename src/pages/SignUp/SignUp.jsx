@@ -1,40 +1,35 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import logInBg from "../../assets/others/authentication.png";
 import logInImg from "../../assets/others/authentication1.png";
-import {
-    loadCaptchaEnginge,
-    validateCaptcha,
-    LoadCanvasTemplate,
-} from "react-simple-captcha";
 
 // Import React Icons
-import { FaFacebook, FaGoogle, FaTwitter } from "react-icons/fa";
+import { FaFacebook, FaGoogle, FaTwitter, FaEye, FaEyeSlash } from "react-icons/fa";
 
-const Login = () => {
-    const [isCaptchaValid, setIsCaptchaValid] = useState(false);
-    const captchaRef = useRef();
+const SignUp = () => {
+    const [showPassword, setShowPassword] = useState(false);
+    const [passwordError, setPasswordError] = useState("");
+    const passwordRef = useRef();
 
-    const handleLogIn = (e) => {
+    const handleSignUp = (e) => {
         e.preventDefault();
         const form = e.target;
+        const name = form.name.value;
         const email = form.email.value;
         const password = form.password.value;
-        console.log(email, password);
-    };
 
-    // Handle CAPTCHA validation
-    const handleCaptchaValidation = () => {
-        const enteredCaptcha = captchaRef.current.value;
-        if (validateCaptcha(enteredCaptcha)) {
-            setIsCaptchaValid(true); // Enable the login button
-        } else {
-            setIsCaptchaValid(false); // Disable the login button
+        // Regex for password validation: At least 8 characters, one uppercase, one number, and one special character
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        if (!passwordRegex.test(password)) {
+            setPasswordError(
+                "Password must be at least 8 characters long, include one uppercase letter, one number, and one special character."
+            );
+            return;
         }
-    };
 
-    useEffect(() => {
-        loadCaptchaEnginge(6); // Load the CAPTCHA when the component mounts
-    }, []);
+        console.log("Form submitted with:", { name, email, password });
+        setPasswordError(""); // Clear error after successful validation
+    };
 
     return (
         <div
@@ -44,21 +39,29 @@ const Login = () => {
             }}
         >
             <div className="flex flex-col md:flex-row justify-center items-center bg-white shadow-2xl rounded-lg max-w-5xl w-full overflow-hidden">
-                {/* Left Image Section */}
-                <div className="w-full md:w-1/2 bg-cover bg-center p-4">
-                    <img
-                        src={logInImg}
-                        alt="Login Illustration"
-                        className="w-full h-full object-contain"
-                    />
-                </div>
-
-                {/* Right Form Section */}
                 <div className="w-full md:w-1/2 p-6 sm:p-10">
                     <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-800 mb-6">
-                        Sign In
+                        Sign Up
                     </h2>
-                    <form onSubmit={handleLogIn}>
+                    <form onSubmit={handleSignUp}>
+                        {/* Name Field */}
+                        <div className="mb-4">
+                            <label
+                                htmlFor="name"
+                                className="block text-gray-700 text-sm font-semibold mb-2"
+                            >
+                                Name
+                            </label>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                placeholder="Enter your name"
+                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+                                required
+                            />
+                        </div>
+
                         {/* Email Field */}
                         <div className="mb-4">
                             <label
@@ -78,7 +81,7 @@ const Login = () => {
                         </div>
 
                         {/* Password Field */}
-                        <div className="mb-4">
+                        <div className="mb-4 relative">
                             <label
                                 htmlFor="password"
                                 className="block text-gray-700 text-sm font-semibold mb-2"
@@ -86,85 +89,62 @@ const Login = () => {
                                 Password
                             </label>
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 id="password"
                                 name="password"
                                 placeholder="Enter your password"
                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+                                ref={passwordRef}
                                 required
                             />
-                        </div>
-
-                        {/* Recaptcha */}
-                        <div className="mb-4">
-                            <label
-                                htmlFor="recaptcha"
-                                className="block text-gray-700 text-sm font-semibold mb-2"
-                            >
-                                Recaptcha
-                            </label>
-                            <div>
-                                <LoadCanvasTemplate />
-                            </div>
-                            <input
-                                type="text"
-                                id="recaptcha"
-                                ref={captchaRef}
-                                placeholder="Type recaptcha here"
-                                className="w-full mt-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-                            />
-                        </div>
-                        <div className="flex justify-center mb-4">
                             <button
                                 type="button"
-                                onClick={handleCaptchaValidation}
-                                className={`bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md focus:outline-none focus:ring focus:ring-green-300 transition duration-300`}
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
                             >
-                                Validate Captcha
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
                             </button>
+                            {passwordError && (
+                                <p className="text-red-500 text-sm mt-2">{passwordError}</p>
+                            )}
                         </div>
 
-                        {/* Sign In Button */}
+                        {/* Sign Up Button */}
                         <button
                             type="submit"
-                            className={`w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ${isCaptchaValid ? "" : "opacity-50 cursor-not-allowed"
-                                }`}
-                            disabled={!isCaptchaValid} // Disable if CAPTCHA is invalid
+                            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
                         >
-                            Sign In
+                            Sign Up
                         </button>
                     </form>
 
-                    {/* New Account Link */}
+                    {/* Already Registered */}
                     <p className="text-center text-gray-600 mt-4">
-                        New here?{" "}
+                        Already registered?{" "}
                         <a
-                            href="/signup"
+                            href="/login"
                             className="text-blue-500 hover:text-blue-700 font-semibold"
                         >
-                            Create a New Account
+                            Go to Log in
                         </a>
                     </p>
 
                     {/* Social Logins */}
                     <div className="mt-6">
-                        <p className="text-center text-gray-600 mb-4">Or Sign in with</p>
+                        <p className="text-center text-gray-600 mb-4">Or Sign up with</p>
                         <div className="flex justify-center space-x-4">
-                            {/* Facebook */}
                             <button
                                 type="button"
                                 className="bg-blue-600 text-white px-4 py-2 rounded-full flex items-center justify-center hover:bg-blue-700 transition duration-300"
                             >
                                 <FaFacebook className="text-lg" />
                             </button>
-                            {/* Google */}
                             <button
                                 type="button"
                                 className="bg-red-500 text-white px-4 py-2 rounded-full flex items-center justify-center hover:bg-red-600 transition duration-300"
                             >
                                 <FaGoogle className="text-lg" />
                             </button>
-                            {/* Twitter */}
                             <button
                                 type="button"
                                 className="bg-blue-400 text-white px-4 py-2 rounded-full flex items-center justify-center hover:bg-blue-500 transition duration-300"
@@ -174,9 +154,18 @@ const Login = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Illustration */}
+                <div className="w-full md:w-1/2 bg-cover bg-center p-4">
+                    <img
+                        src={logInImg}
+                        alt="Login Illustration"
+                        className="w-full h-full object-contain"
+                    />
+                </div>
             </div>
         </div>
     );
 };
 
-export default Login;
+export default SignUp;

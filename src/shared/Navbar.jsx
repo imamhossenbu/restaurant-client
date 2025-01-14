@@ -59,6 +59,18 @@ const Navbar = () => {
           Contact Us
         </NavLink>
       </li>
+      <li>
+        <NavLink
+          to="/login"
+          className={({ isActive }) =>
+            isActive
+              ? "text-yellow-500 font-bold px-4 py-2"
+              : "text-white px-4 py-2"
+          }
+        >
+        Log in
+        </NavLink>
+      </li>
     </>
   );
 

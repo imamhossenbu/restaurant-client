@@ -1,10 +1,11 @@
 import React from 'react';
 import Cover from '../../shared/Cover';
 import contactImg from '../../assets/contact/banner.jpg';
-import SectionTitle from "../../components/SectionTitle/SectionTitle"
+
 import { IoCall, IoTime } from "react-icons/io5";
 import { FaLocationDot } from 'react-icons/fa6';
 import ContactForm from './ContactForm';
+import SectionTitle from '../../components/SectionTitle/SEctionTitle';
 
 const ContactUs = () => {
     return (
