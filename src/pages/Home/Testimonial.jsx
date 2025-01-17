@@ -7,14 +7,16 @@ import { Navigation } from 'swiper/modules';
 import { Rating } from '@smastrom/react-rating'
 import '@smastrom/react-rating/style.css'
 import { FaQuoteLeft } from 'react-icons/fa';
+import axios from 'axios';
+import useAxiosPublic from '../../Hooks/useAxiosPublic';
 
 const Testimonial = () => {
+    const axiosSecurePublic = useAxiosPublic();
     const [reviews, setReviews] = useState([]);
 
     useEffect(()=>{
-        fetch('http://localhost:3000/reviews')
-        .then(res => res.json())
-        .then(data => setReviews(data))
+        axiosSecurePublic.get('/reviews')
+        .then(data => setReviews(data.data))
     },[])
 
 

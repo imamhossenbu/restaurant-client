@@ -1,0 +1,24 @@
+[
+    {
+      "id": 1,
+      "name": "Caesar Salad",
+      "image": "https://i.ibb.co.com/JzH8kVB/slide1.jpg",
+      "recipe": "Lettuce, Eggs, Parmesan Cheese, Chicken Breast Fillets",
+      "price": 12.99
+    },
+    {
+      "id": 2,
+      "name": "Grilled Salmon",
+      "image": "https://i.ibb.co.com/8bzNV6x/slide2.jpg",
+      "recipe": "Salmon, Garlic, Lemon, Olive Oil",
+      "price": 22.99
+    },
+    {
+      "id": 3,
+      "name": "Pasta Alfredo",
+      "image": "https://i.ibb.co.com/CsTVpsN/slide3.jpg",
+      "recipe": "Fettuccine, Cream, Garlic, Parmesan",
+      "price": 15.99
+    }
+  ]
+  

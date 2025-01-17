@@ -1,167 +1,190 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
+import { FaFacebook, FaGoogle, FaEye, FaEyeSlash, FaGithub } from "react-icons/fa";
+import { AuthContext } from "../../Provider/AuthProvider";
+import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import useAxiosPublic from "../../Hooks/useAxiosPublic";
 import logInBg from "../../assets/others/authentication.png";
 import logInImg from "../../assets/others/authentication1.png";
 
-// Import React Icons
-import { FaFacebook, FaGoogle, FaTwitter, FaEye, FaEyeSlash } from "react-icons/fa";
-
 const SignUp = () => {
+    const axiosSecurePublic = useAxiosPublic();
+    const { createUser, googleLogIn, updateUserProfile, loginWithFacebook, githubLogIn } = useContext(AuthContext);
     const [showPassword, setShowPassword] = useState(false);
     const [passwordError, setPasswordError] = useState("");
-    const passwordRef = useRef();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || '/';
 
     const handleSignUp = (e) => {
         e.preventDefault();
         const form = e.target;
         const name = form.name.value;
+        const photo = form.photo.value;
         const email = form.email.value;
         const password = form.password.value;
 
-        // Regex for password validation: At least 8 characters, one uppercase, one number, and one special character
         const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
         if (!passwordRegex.test(password)) {
-            setPasswordError(
-                "Password must be at least 8 characters long, include one uppercase letter, one number, and one special character."
-            );
+            setPasswordError("Password must be at least 8 characters long, include one uppercase letter, one number, and one special character.");
             return;
         }
 
-        console.log("Form submitted with:", { name, email, password });
-        setPasswordError(""); // Clear error after successful validation
+        createUser(email, password)
+            .then(() => {
+                // Update the user's profile
+                updateUserProfile(name, photo)
+                    .then(() => {
+                        const userInfo = {
+                            name: name,
+                            email: email,
+                        };
+                        // Save user info in the database
+                        axiosSecurePublic.post('/users', userInfo)
+                            .then(() => {
+                                toast.success("Sign Up Successful! User added to the database.", {
+                                    position: "bottom-right",
+                                });
+                                navigate(from, { replace: true });
+                            })
+                            .catch((dbError) => {
+                                toast.error(`Database error: ${dbError.message}`, {
+                                    position: "bottom-right",
+                                });
+                            });
+                    })
+                    .catch((updateError) => {
+                        toast.error(`Profile update error: ${updateError.message}`, {
+                            position: "bottom-right",
+                        });
+                    });
+            })
+            .catch((authError) => {
+                toast.error(`Sign-up error: ${authError.message}`, {
+                    position: "bottom-right",
+                });
+            });
+
     };
+
+    const handleFacebookLogIn = () => {
+        loginWithFacebook()
+            .then((res) => {
+                const result = res.user;
+                console.log(result);
+                const userInfo = {
+                    name: result?.displayName,
+                    email: result?.email,
+                }
+                axiosSecurePublic.post('/users', userInfo)
+                    .then(() => {
+                        toast.success("Log In Successful", {
+                            position: "bottom-right",
+                        });
+                        navigate(from, { replace: true });
+                    })
+            })
+            .catch(error => {
+                toast.error(error.message);
+            })
+    }
+
+    const handleGoogleLogIn = () => {
+        googleLogIn()
+            .then((res) => {
+                const result = res.user;
+                console.log(result);
+                const userInfo = {
+                    name: result?.displayName,
+                    email: result?.email,
+                }
+                axiosSecurePublic.post('/users', userInfo)
+                    .then(() => {
+                        toast.success("Log In Successful", {
+                            position: "bottom-right",
+                        });
+                        navigate(from, { replace: true });
+                    })
+            })
+            .catch((error) => {
+                toast.error(error.message, {
+                    position: "bottom-right",
+                });
+            });
+    };
+
+    const handleGithubLogin = () => {
+        githubLogIn()
+            .then((res) => {
+                const result = res.user;
+                console.log(result);
+                const userInfo = {
+                    name: result?.displayName,
+                    email: result?.email,
+                }
+                axiosSecurePublic.post('/users', userInfo)
+                    .then(() => {
+                        toast.success("Log In Successful", {
+                            position: "bottom-right",
+                        });
+                        navigate(from, { replace: true });
+                    })
+            })
+            .catch(error => {
+                toast.error(error.message);
+            })
+    }
+
+
+
 
     return (
         <div
             className="flex items-center justify-center min-h-screen bg-cover bg-center py-10 px-4 sm:px-8"
-            style={{
-                backgroundImage: `url('${logInBg}')`,
-            }}
+            style={{ backgroundImage: `url('${logInBg}')` }}
         >
-            <div className="flex flex-col md:flex-row justify-center items-center bg-white shadow-2xl rounded-lg max-w-5xl w-full overflow-hidden">
+            <div className="flex flex-col md:flex-row bg-white shadow-2xl rounded-lg max-w-5xl w-full overflow-hidden">
                 <div className="w-full md:w-1/2 p-6 sm:p-10">
-                    <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-800 mb-6">
-                        Sign Up
-                    </h2>
+                    <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Sign Up</h2>
                     <form onSubmit={handleSignUp}>
-                        {/* Name Field */}
+                        {/* Input Fields */}
+                        {/* Reuse input component if needed */}
                         <div className="mb-4">
-                            <label
-                                htmlFor="name"
-                                className="block text-gray-700 text-sm font-semibold mb-2"
-                            >
-                                Name
-                            </label>
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                placeholder="Enter your name"
-                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-                                required
-                            />
+                            <label className="block text-gray-700 mb-2">Name</label>
+                            <input type="text" name="name" placeholder="Enter your name" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
-
-                        {/* Email Field */}
                         <div className="mb-4">
-                            <label
-                                htmlFor="email"
-                                className="block text-gray-700 text-sm font-semibold mb-2"
-                            >
-                                Email Address
-                            </label>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                placeholder="Enter your email"
-                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-                                required
-                            />
+                            <label className="block text-gray-700 mb-2">Photo URL</label>
+                            <input type="url" name="photo" placeholder="Enter your photo URL" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
-
-                        {/* Password Field */}
+                        <div className="mb-4">
+                            <label className="block text-gray-700 mb-2">Email Address</label>
+                            <input type="email" name="email" placeholder="Enter your email" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
                         <div className="mb-4 relative">
-                            <label
-                                htmlFor="password"
-                                className="block text-gray-700 text-sm font-semibold mb-2"
-                            >
-                                Password
-                            </label>
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                id="password"
-                                name="password"
-                                placeholder="Enter your password"
-                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-                                ref={passwordRef}
-                                required
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
-                            >
+                            <label className="block text-gray-700 mb-2">Password</label>
+                            <input type={showPassword ? "text" : "password"} name="password" placeholder="Enter your password" className="w-full px-4 py-2 border rounded-lg" required />
+                            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-9">
                                 {showPassword ? <FaEyeSlash /> : <FaEye />}
                             </button>
-                            {passwordError && (
-                                <p className="text-red-500 text-sm mt-2">{passwordError}</p>
-                            )}
+                            {passwordError && <p className="text-red-500 text-sm mt-2">{passwordError}</p>}
                         </div>
-
-                        {/* Sign Up Button */}
-                        <button
-                            type="submit"
-                            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
-                        >
-                            Sign Up
-                        </button>
+                        <button type="submit" className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg">Sign Up</button>
                     </form>
 
-                    {/* Already Registered */}
-                    <p className="text-center text-gray-600 mt-4">
-                        Already registered?{" "}
-                        <a
-                            href="/login"
-                            className="text-blue-500 hover:text-blue-700 font-semibold"
-                        >
-                            Go to Log in
-                        </a>
-                    </p>
-
-                    {/* Social Logins */}
-                    <div className="mt-6">
-                        <p className="text-center text-gray-600 mb-4">Or Sign up with</p>
-                        <div className="flex justify-center space-x-4">
-                            <button
-                                type="button"
-                                className="bg-blue-600 text-white px-4 py-2 rounded-full flex items-center justify-center hover:bg-blue-700 transition duration-300"
-                            >
-                                <FaFacebook className="text-lg" />
-                            </button>
-                            <button
-                                type="button"
-                                className="bg-red-500 text-white px-4 py-2 rounded-full flex items-center justify-center hover:bg-red-600 transition duration-300"
-                            >
-                                <FaGoogle className="text-lg" />
-                            </button>
-                            <button
-                                type="button"
-                                className="bg-blue-400 text-white px-4 py-2 rounded-full flex items-center justify-center hover:bg-blue-500 transition duration-300"
-                            >
-                                <FaTwitter className="text-lg" />
-                            </button>
+                    {/* Social Login */}
+                    <div className="mt-6 text-center">
+                        <p>Or Sign Up with</p>
+                        <div className="flex justify-center space-x-4 mt-4">
+                            <button onClick={handleFacebookLogIn} className="bg-blue-600 text-white p-2 rounded-full"><FaFacebook /></button>
+                            <button onClick={handleGoogleLogIn} className="bg-red-500 text-white p-2 rounded-full"><FaGoogle /></button>
+                            <button onClick={handleGithubLogin} className="bg-gray-800 text-white p-2 rounded-full"><FaGithub /></button>
                         </div>
                     </div>
                 </div>
-
-                {/* Illustration */}
-                <div className="w-full md:w-1/2 bg-cover bg-center p-4">
-                    <img
-                        src={logInImg}
-                        alt="Login Illustration"
-                        className="w-full h-full object-contain"
-                    />
+                <div className="hidden md:block md:w-1/2">
+                    <img src={logInImg} alt="Sign Up Illustration" className="w-full h-full object-contain" />
                 </div>
             </div>
         </div>

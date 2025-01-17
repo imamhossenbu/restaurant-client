@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import logInBg from "../../assets/others/authentication.png";
 import logInImg from "../../assets/others/authentication1.png";
 import {
@@ -6,35 +6,144 @@ import {
     validateCaptcha,
     LoadCanvasTemplate,
 } from "react-simple-captcha";
-
-// Import React Icons
-import { FaFacebook, FaGoogle, FaTwitter } from "react-icons/fa";
+import { FaFacebook, FaGithub, FaGoogle, FaTwitter } from "react-icons/fa";
+import { AuthContext } from "../../Provider/AuthProvider";
+import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import useAxiosPublic from "../../Hooks/useAxiosPublic";
 
 const Login = () => {
+    const axiosSecurePublic = useAxiosPublic();
+    const { signInUser, googleLogIn, githubLogIn, loginWithFacebook } = useContext(AuthContext);
     const [isCaptchaValid, setIsCaptchaValid] = useState(false);
-    const captchaRef = useRef();
+    const navigate = useNavigate();
+    const location = useLocation();
+    console.log(location);
+    const from = location.state?.from?.pathname || "/";
+
+    useEffect(() => {
+        loadCaptchaEnginge(6);
+    }, []);
 
     const handleLogIn = (e) => {
         e.preventDefault();
         const form = e.target;
-        const email = form.email.value;
-        const password = form.password.value;
-        console.log(email, password);
+        const email = form.email.value.trim();
+        const password = form.password.value.trim();
+
+        console.log({
+            email,
+            password,
+        });
+
+        signInUser(email, password)
+            .then((result) => {
+                toast.success("Log In Successful", {
+                    position: "bottom-right",
+                });
+                navigate(from, { replace: true });
+            })
+            .catch((error) => {
+                console.error(error?.message, error);
+                toast.error(getErrorMessage(error.code), {
+                    position: "bottom-right",
+                });
+            });
     };
 
-    // Handle CAPTCHA validation
-    const handleCaptchaValidation = () => {
-        const enteredCaptcha = captchaRef.current.value;
+    const handleFacebookLogIn = () => {
+        loginWithFacebook()
+            .then((res) => {
+                const result = res.user;
+                console.log(result);
+                const userInfo = {
+                    name: result?.displayName,
+                    email: result?.email,
+                }
+                axiosSecurePublic.post('/users', userInfo)
+                    .then(() => {
+                        toast.success("Log In Successful", {
+                            position: "bottom-right",
+                        });
+                        navigate(from, { replace: true });
+                    })
+            })
+            .catch(error => {
+                toast.error(error.message);
+            })
+    }
+
+    const handleGoogleLogIn = () => {
+        googleLogIn()
+            .then((res) => {
+                const result = res.user;
+                console.log(result);
+                const userInfo = {
+                    name: result.displayName,
+                    email: result.email,
+                }
+                axiosSecurePublic.post('/users', userInfo)
+                    .then(() => {
+                        toast.success("Log In Successful", {
+                            position: "bottom-right",
+                        });
+                        navigate(from, { replace: true });
+                    })
+            })
+            .catch((error) => {
+                toast.error(error.message, {
+                    position: "bottom-right",
+                });
+            });
+    };
+
+    const handleGithubLogin = () => {
+        githubLogIn()
+            .then((res) => {
+                const result = res.user;
+                console.log(result);
+                const userInfo = {
+                    name: result?.displayName,
+                    email: result?.email,
+                }
+                axiosSecurePublic.post('/users', userInfo)
+                    .then(() => {
+                        toast.success("Log In Successful", {
+                            position: "bottom-right",
+                        });
+                        navigate(from, { replace: true });
+                    })
+            })
+            .catch(error => {
+                toast.error(error.message);
+            })
+    }
+
+    const handleCaptchaValidation = (e) => {
+        const enteredCaptcha = e.target.value.trim();
         if (validateCaptcha(enteredCaptcha)) {
-            setIsCaptchaValid(true); // Enable the login button
+            setIsCaptchaValid(true);
+            toast.success("CAPTCHA is correct!", { position: "bottom-right" });
         } else {
-            setIsCaptchaValid(false); // Disable the login button
+            setIsCaptchaValid(false);
+            toast.error("CAPTCHA is incorrect. Try again.", {
+                position: "bottom-right",
+            });
         }
     };
 
-    useEffect(() => {
-        loadCaptchaEnginge(6); // Load the CAPTCHA when the component mounts
-    }, []);
+    const getErrorMessage = (errorCode) => {
+        if (errorCode === "auth/wrong-password") {
+            return "Incorrect password.";
+        }
+        if (errorCode === "auth/user-not-found") {
+            return "User not found.";
+        }
+        if (errorCode === "auth/invalid-email") {
+            return "Invalid email format.";
+        }
+        return "Login failed. Try again.";
+    };
 
     return (
         <div
@@ -95,41 +204,32 @@ const Login = () => {
                             />
                         </div>
 
-                        {/* Recaptcha */}
+                        {/* CAPTCHA */}
                         <div className="mb-4">
                             <label
                                 htmlFor="recaptcha"
                                 className="block text-gray-700 text-sm font-semibold mb-2"
                             >
-                                Recaptcha
+                                CAPTCHA
                             </label>
-                            <div>
-                                <LoadCanvasTemplate />
-                            </div>
+                            <LoadCanvasTemplate />
                             <input
                                 type="text"
                                 id="recaptcha"
-                                ref={captchaRef}
-                                placeholder="Type recaptcha here"
+                                name="captcha"
+                                onBlur={handleCaptchaValidation}
+                                placeholder="Type CAPTCHA here"
                                 className="w-full mt-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+                                required
                             />
-                        </div>
-                        <div className="flex justify-center mb-4">
-                            <button
-                                type="button"
-                                onClick={handleCaptchaValidation}
-                                className={`bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md focus:outline-none focus:ring focus:ring-green-300 transition duration-300`}
-                            >
-                                Validate Captcha
-                            </button>
                         </div>
 
                         {/* Sign In Button */}
                         <button
                             type="submit"
-                            className={`w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ${isCaptchaValid ? "" : "opacity-50 cursor-not-allowed"
+                            className={`w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ${isCaptchaValid ? "hover:scale-95" : "opacity-50 cursor-not-allowed"
                                 }`}
-                            disabled={!isCaptchaValid} // Disable if CAPTCHA is invalid
+                            disabled={!isCaptchaValid}
                         >
                             Sign In
                         </button>
@@ -151,7 +251,7 @@ const Login = () => {
                         <p className="text-center text-gray-600 mb-4">Or Sign in with</p>
                         <div className="flex justify-center space-x-4">
                             {/* Facebook */}
-                            <button
+                            <button onClick={handleFacebookLogIn}
                                 type="button"
                                 className="bg-blue-600 text-white px-4 py-2 rounded-full flex items-center justify-center hover:bg-blue-700 transition duration-300"
                             >
@@ -159,17 +259,18 @@ const Login = () => {
                             </button>
                             {/* Google */}
                             <button
+                                onClick={handleGoogleLogIn}
                                 type="button"
                                 className="bg-red-500 text-white px-4 py-2 rounded-full flex items-center justify-center hover:bg-red-600 transition duration-300"
                             >
                                 <FaGoogle className="text-lg" />
                             </button>
                             {/* Twitter */}
-                            <button
+                            <button onClick={handleGithubLogin}
                                 type="button"
                                 className="bg-blue-400 text-white px-4 py-2 rounded-full flex items-center justify-center hover:bg-blue-500 transition duration-300"
                             >
-                                <FaTwitter className="text-lg" />
+                                <FaGithub className="text-lg" />
                             </button>
                         </div>
                     </div>

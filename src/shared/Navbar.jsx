@@ -1,13 +1,36 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { AuthContext } from "../Provider/AuthProvider";
+import { toast } from "react-toastify";
+import { FaCartShopping } from "react-icons/fa6";
+import useCart from "../Hooks/useCart";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const { user, logOut } = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [cart] = useCart();
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+
+  const handleLogOut = () => {
+    logOut()
+      .then(result => {
+        navigate('/login')
+        toast.success('Log Out Successful', {
+          position: 'bottom-right'
+        })
+      })
+      .catch(error => {
+        toast.error(error.message, {
+          position: 'bottom-right'
+        });
+      });
+
+  }
 
   const navOptions = (
     <>
@@ -60,17 +83,46 @@ const Navbar = () => {
         </NavLink>
       </li>
       <li>
-        <NavLink
-          to="/login"
-          className={({ isActive }) =>
-            isActive
-              ? "text-yellow-500 font-bold px-4 py-2"
-              : "text-white px-4 py-2"
-          }
-        >
-        Log in
-        </NavLink>
+        <Link to="/dashboard/my-cart">
+          <button className="btn">
+            <FaCartShopping size={25} />
+            <div className="badge badge-secondary">+{cart.length}</div>
+          </button>
+        </Link>
       </li>
+
+
+      {
+        user ? <>
+          <button onClick={handleLogOut} className="btn btn-neutral">Log Out</button>
+        </> :
+          <>
+            <li>
+              <NavLink
+                to="/login"
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-yellow-500 font-bold px-4 py-2"
+                    : "text-white px-4 py-2"
+                }
+              >
+                Log in
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/signup"
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-yellow-500 font-bold px-4 py-2"
+                    : "text-white px-4 py-2"
+                }
+              >
+                Sign Up
+              </NavLink>
+            </li>
+          </>
+      }
     </>
   );
 
@@ -101,9 +153,8 @@ const Navbar = () => {
 
       {/* Mobile Dropdown Menu */}
       <div
-        className={`lg:hidden overflow-hidden bg-gray-900 text-white transition-all duration-500 ease-in-out ${
-          menuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-        }`}
+        className={`lg:hidden overflow-hidden bg-gray-900 text-white transition-all duration-500 ease-in-out ${menuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          }`}
       >
         <ul className="flex flex-col items-start px-6 py-4 space-y-2">
           {navOptions}
