@@ -1,18 +1,17 @@
-import React from 'react';
-import useCart from '../../Hooks/useCart';
-import SectionTitle from '../../components/SectionTitle/SEctionTitle';
-import { FaTrash } from 'react-icons/fa';
-import Swal from 'sweetalert2';
-import useAxiosSecure from '../../Hooks/useAxiosSecure';
-import { Link } from 'react-router-dom';
+import { useQuery } from "@tanstack/react-query";
+import SectionTitle from "../../components/SectionTitle/SEctionTitle";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
+import Swal from "sweetalert2";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import useMenu from "../../Hooks/useMenu";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
-const MyCart = () => {
-    const [cart, refetch] = useCart();
+
+
+const ManageAllItems = () => {
     const axiosSecure = useAxiosSecure();
-
-    const totalPrice = cart.reduce((acc, item) => {
-        return acc + item.price;
-    }, 0).toFixed(2);
+    const [menus, isPending, refetch] = useMenu();
+    const navigate = useNavigate();
 
     const handleDelete = (id) => {
         Swal.fire({
@@ -25,7 +24,7 @@ const MyCart = () => {
             confirmButtonText: "Yes, delete it!"
         }).then((result) => {
             if (result.isConfirmed) {
-                axiosSecure.delete(`/carts/${id}`)
+                axiosSecure.delete(`/menu/${id}`)
                     .then(res => {
                         if (res.data.deletedCount) {
                             Swal.fire({
@@ -39,26 +38,14 @@ const MyCart = () => {
 
             }
         });
+
     }
 
     return (
-        <>
-            <SectionTitle className='w-[100%] mx-auto' subheading={'My Cart'} heading={'Wanna add more?'} />
-            <div className='w-full md:w-[90%] mx-auto bg-white min-h-screen p-4 rounded-lg shadow-md'>
-                <div className='uppercase flex flex-col md:flex-row space-y-2 justify-between items-center mb-4'>
-                    <h2 className='text-xl font-semibold'>Total Orders: {cart.length}</h2>
-                    <h2 className='text-xl font-semibold'>Total Price: ${totalPrice}</h2>
-                    {cart.length ? <Link to='/dashboard/payment'>
-                        <button className='px-4 py-2 bg-[#D1A054] text-white font-semibold rounded-md uppercase'>
-                            Pay
-                        </button>
-                    </Link>
-                        :
-                        <button disabled className='px-4 py-2 bg-[#D1A054] text-white font-semibold rounded-md uppercase'>
-                            Pay
-                        </button>
-                    }
-                </div>
+        <div>
+            <SectionTitle subheading={"Hurry Up!"} heading={"Manage all items"}></SectionTitle>
+            <div className="max-w-3xl mx-auto bg-white min-h-screen p-4 rounded-lg shadow-md">
+                <h1 className="text-2xl font-bold">Total Items: {menus.length}</h1>
                 <div className="overflow-x-auto my-4">
                     <table className="table-auto w-full text-left border-collapse">
                         {/* Table Head */}
@@ -71,11 +58,12 @@ const MyCart = () => {
                                 <th className='p-3'>Item Name</th>
                                 <th className='p-3'>Price</th>
                                 <th className='p-3'>Action</th>
+                                <th className='p-3'>Action</th>
                             </tr>
                         </thead>
                         {/* Table Body */}
                         <tbody>
-                            {cart.map((item, index) => {
+                            {menus.map((item, index) => {
                                 return (
                                     <tr key={item._id} className='border-b hover:bg-gray-100'>
                                         <td className='p-3 font-bold'>{index + 1}</td>  {/* Increasing number here */}
@@ -93,6 +81,11 @@ const MyCart = () => {
                                         </td>
                                         <td className='p-3'>{item.name}</td>
                                         <td className='p-3'>${item.price}</td>
+                                        <td className="pl-6 text-amber-600">
+                                            <Link to={`/dashboard/update-items/${item._id}`} state={{ item }} className="btn btn-ghost btn-xs text-yellow-500 hover:text-yellow-700">
+                                                <FaEdit size={18} />
+                                            </Link>
+                                        </td>
                                         <td className='p-3'>
                                             <button onClick={() => handleDelete(item._id)} className="btn btn-ghost btn-xs text-red-500 hover:text-red-700">
                                                 <FaTrash size={18} />
@@ -106,8 +99,8 @@ const MyCart = () => {
                     </table>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 
-export default MyCart;
+export default ManageAllItems;

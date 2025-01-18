@@ -21,12 +21,22 @@ const Category = () => {
 
            </SectionTitle>
             <Swiper
-                slidesPerView={4}
+                slidesPerView={2}
                 spaceBetween={30}
                 freeMode={true}
                 loop={true}
                 pagination={{
                     clickable: true,
+                }}
+                breakpoints={{
+                    // When the screen width is >= 640px
+                    640: {
+                        slidesPerView: 3,
+                    },
+                    // When the screen width is >= 1024px
+                    1024: {
+                        slidesPerView: 4,
+                    },
                 }}
                 modules={[FreeMode, Pagination]}
                 className="mySwiper mb-20"

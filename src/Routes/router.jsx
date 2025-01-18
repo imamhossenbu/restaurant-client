@@ -14,64 +14,93 @@ import AllUsers from "../pages/Dashboard/AllUsers";
 import ErrorPage from "../pages/ErrorPage";
 import AdminRoute from "./AdminRoute";
 import AddItem from "../pages/Dashboard/AddItem";
+import ManageAllItems from "../pages/Dashboard/ManageAllItems";
+import UpdateItems from "../pages/Dashboard/UpdateItems";
+import Payment from "../pages/Dashboard/Payment/Payment";
+import PaymentHistory from "../pages/Dashboard/Payment/PaymentHistory";
+import UserHome from "../pages/Dashboard/UserHome";
+import AdminHome from "../pages/Dashboard/AdminHome";
 
 export const router = createBrowserRouter([
     {
-        path:"/",
-        element:<Main></Main>,
-        errorElement:<ErrorPage></ErrorPage>,
-        children:[
+        path: "/",
+        element: <Main></Main>,
+        errorElement: <ErrorPage></ErrorPage>,
+        children: [
             {
-                path:"/",
-                element:<Home></Home>
+                path: "/",
+                element: <Home></Home>
             },
             {
-                path:'/menu',
-                element:<Menu></Menu>
+                path: '/menu',
+                element: <Menu></Menu>
             },
             {
-                path:'/order/:category',
-                element:<Order></Order>
+                path: '/order/:category',
+                element: <Order></Order>
             },
             {
-                path:'/contact',
-                element:<ContactUs></ContactUs>
+                path: '/contact',
+                element: <ContactUs></ContactUs>
             },
             {
-                path:'/login',
-                element:<Login></Login>
+                path: '/login',
+                element: <Login></Login>
             },
             {
-                path:'/signup',
-                element:<SignUp></SignUp>
+                path: '/signup',
+                element: <SignUp></SignUp>
             },
             {
-                path:'/secret',
-                element:<PrivateRoute><Secret></Secret></PrivateRoute>
+                path: '/secret',
+                element: <PrivateRoute><Secret></Secret></PrivateRoute>
             }
         ]
     },
     {
-        path:'/dashboard',
-        element:<PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
-        children:[
+        path: '/dashboard',
+        element: <PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
+        children: [
             {
-                path:'/dashboard/my-cart',
-                element:<MyCart></MyCart>
+                path: '/dashboard/my-cart',
+                element: <MyCart></MyCart>
             },
-
+            {
+                path:'payment',
+                element:<Payment></Payment>
+            },
+            {
+                path:'payment-history',
+                element:<PaymentHistory></PaymentHistory>
+            },
+            {
+                path:'userHome',
+                element:<UserHome></UserHome>
+            },
 
 
 
             // admin routes
             {
-                path:'/dashboard/all-users',
-                element:<AdminRoute><AllUsers></AllUsers></AdminRoute>
+                path:'admin-home',
+                element:<AdminRoute><AdminHome></AdminHome></AdminRoute>
+            },
+            {
+                path: '/dashboard/all-users',
+                element: <AdminRoute><AllUsers></AllUsers></AdminRoute>
             }
             ,
             {
-                path:'/dashboard/add-items',
-                element:<AdminRoute><AddItem></AddItem></AdminRoute>
+                path: '/dashboard/add-items',
+                element: <AdminRoute><AddItem></AddItem></AdminRoute>
+            },
+            {
+                path: '/dashboard/manage-items',
+                element: <AdminRoute><ManageAllItems></ManageAllItems></AdminRoute>,
+            },
+            {
+                path: '/dashboard/update-items/:id',
+                element: <AdminRoute><UpdateItems></UpdateItems></AdminRoute>,
             }
         ]
     }

@@ -172,6 +172,15 @@ const SignUp = () => {
                         </div>
                         <button type="submit" className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg">Sign Up</button>
                     </form>
+                    <p className="text-center text-gray-600 mt-4">
+                        Already have an account?{" "}
+                        <a
+                            href="/login"
+                            className="text-blue-500 hover:text-blue-700 font-semibold"
+                        >
+                           Go to Log in 
+                        </a>
+                    </p>
 
                     {/* Social Login */}
                     <div className="mt-6 text-center">

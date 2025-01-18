@@ -57,7 +57,7 @@ const RecommendMenu = () => {
     return (
         <div className='max-w-5xl mx-auto my-20 px-4'>
             <div className='bg-black text-white h-[130px] flex justify-center items-center mb-20'>
-                <h1 className='text-3xl font-bold'>Call Us: +8801624-994532</h1>
+                <h1 className='text-xl md:text-3xl font-bold'>Call Us: +8801624-994532</h1>
             </div>
             <div>
                 <SectionTitle

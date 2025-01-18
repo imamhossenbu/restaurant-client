@@ -5,12 +5,15 @@ import { AuthContext } from "../Provider/AuthProvider";
 import { toast } from "react-toastify";
 import { FaCartShopping } from "react-icons/fa6";
 import useCart from "../Hooks/useCart";
+import useAdmin from "../Hooks/useAdmin";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { user, logOut } = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const [cart] = useCart();
+  const [isAdmin] = useAdmin();
+
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -122,6 +125,26 @@ const Navbar = () => {
               </NavLink>
             </li>
           </>
+      }
+      {
+        user && isAdmin && <li>
+          <NavLink
+            to="/dashboard/admin-home"
+            className='px-4 py-3 bg-amber-400  font-semibold'
+          >
+            Dashboard 
+          </NavLink>
+        </li>
+      }
+       {
+        user && !isAdmin && <li>
+          <NavLink
+            to="/dashboard/userHome"
+            className='px-4 py-3 bg-amber-500 font-semibold'
+          >
+            Dashboard 
+          </NavLink>
+        </li>
       }
     </>
   );

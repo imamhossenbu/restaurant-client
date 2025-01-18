@@ -44,7 +44,7 @@ const Dashboard = () => {
                                 <NavLink
                                     to="/dashboard/manage-items"
                                     className={({ isActive }) => (isActive ? activeClass : '')}>
-                                    Manage Items 
+                                    Manage All Items 
                                 </NavLink>
                             </li>
                             <li className="flex items-center gap-2">
@@ -88,7 +88,7 @@ const Dashboard = () => {
                             <li className="flex items-center gap-2">
                                 <FaMoneyBill1 />
                                 <NavLink
-                                    to="/dashboard/payment"
+                                    to="/dashboard/payment-history"
                                     className={({ isActive }) => (isActive ? activeClass : '')}>
                                     Payment History
                                 </NavLink>
